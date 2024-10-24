@@ -1,5 +1,6 @@
 package edu.toppin.todolist
 
+import android.health.connect.datatypes.units.Percentage
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.sql.Timestamp
@@ -12,6 +13,7 @@ data class Item(
     val description: String,
     val isChecked: Boolean,
     val daysToComplete: Int,
+    val percentageRemaining: Float = 1f,
     val timestamp: Long = System.currentTimeMillis() // Automatically set to current time
 )
 

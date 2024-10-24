@@ -2,6 +2,8 @@ package edu.toppin.todolist
 
 import ItemViewModel
 import android.graphics.drawable.Icon
+import android.health.connect.datatypes.units.Percentage
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.runtime.*
@@ -35,6 +37,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import kotlinx.coroutines.delay
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun ItemListScreen(itemViewModel: ItemViewModel, onAddItem: () -> Unit) {
@@ -57,7 +62,7 @@ fun ItemListScreen(itemViewModel: ItemViewModel, onAddItem: () -> Unit) {
             contentPadding = padding,
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Color(95, 95, 95, 255))
+                .background(color = Color(80, 80, 80, 255))
         ) {
             items(itemList) { item ->
                 ItemRow(item, itemViewModel)
@@ -70,6 +75,30 @@ fun ItemListScreen(itemViewModel: ItemViewModel, onAddItem: () -> Unit) {
 @Composable
 fun ItemRow(item: Item, itemViewModel: ItemViewModel) {
     var isChecked by remember { mutableStateOf(item.isChecked) }
+    var percentageRemaining by remember(item) { mutableFloatStateOf(item.percentageRemaining) }
+
+
+    // Update the percentage remaining periodically
+    LaunchedEffect(Unit) {
+        while (true) {
+            val currentTimeMillis = System.currentTimeMillis()
+            val duration = item.daysToComplete * (60 * 60 * 1000)
+            val endTimeMillis = item.timestamp + duration
+
+            percentageRemaining = max(0f, min(1f, (endTimeMillis - currentTimeMillis).toFloat() / duration))
+            delay(1000) // Update every second
+            // Log.d("GradientProgress", "Duration: $duration, Current Time: $currentTimeMillis, End Time: $endTimeMillis, Percentage: $percentageRemaining")
+
+        }
+    }
+
+    // Create a color gradient from green to red
+    val color = Color(
+        red = (255 * (1 - percentageRemaining)).toInt(),
+        green = (255 * percentageRemaining).toInt(),
+        blue = 0
+    )
+
 
     Box(
         modifier = Modifier
@@ -77,7 +106,7 @@ fun ItemRow(item: Item, itemViewModel: ItemViewModel) {
             .padding(10.dp)
             .height(50.dp)
             .background(
-                color = Color.White,
+                color = color,
                 shape = RoundedCornerShape(10.dp)
             ),
     ) {
