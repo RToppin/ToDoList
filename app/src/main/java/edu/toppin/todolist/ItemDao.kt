@@ -21,6 +21,6 @@ interface ItemDao{
     @Delete
     suspend fun delete(item: Item)
 
-    @Query("SELECT * FROM item_table ORDER BY id ASC")
+    @Query("SELECT * FROM item_table ORDER BY timestamp ASC")
     fun getAllItems(): Flow<List<Item>>
 }

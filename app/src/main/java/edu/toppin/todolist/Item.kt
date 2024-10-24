@@ -2,13 +2,17 @@ package edu.toppin.todolist
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.sql.Timestamp
+import java.time.DateTimeException
 
 @Entity(tableName = "item_table")
 data class Item(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val description: String,
-    val isChecked: Boolean
+    val isChecked: Boolean,
+    val daysToComplete: Int,
+    val timestamp: Long = System.currentTimeMillis() // Automatically set to current time
 )
 
 //The @Entity annotation indicates that this class represents a table.

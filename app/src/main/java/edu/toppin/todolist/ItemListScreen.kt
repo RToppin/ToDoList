@@ -48,7 +48,7 @@ fun ItemListScreen(itemViewModel: ItemViewModel, onAddItem: () -> Unit) {
                 modifier = Modifier
 
             ) {
-                Icon(Icons.Filled.Add, "Floating action button.")
+                Icon(Icons.Filled.Add, "Add Task")
             }
         }
 
@@ -112,56 +112,6 @@ fun ItemRow(item: Item, itemViewModel: ItemViewModel) {
                 itemViewModel.delete(item)
             }) {
                 Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete task")
-            }
-        }
-    }
-}
-
-@Composable
-fun testScreen(item: Item, itemViewModel: ItemViewModel) {
-    // Collect the list of items from the ViewModel
-    val itemList by itemViewModel.allItems.collectAsState(initial = emptyList())
-    var isChecked by remember { mutableStateOf(item.isChecked) }
-
-    LazyColumn {
-        itemsIndexed(itemList) { index, item ->
-            Box(
-                modifier = Modifier
-                    .padding(10.dp)
-                    .height(50.dp)
-                    .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(5.dp)
-                    ),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(10.dp, 0.dp, 10.dp, 0.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = item.name,
-                        fontSize = 20.sp,
-                        color = Color.Black
-                    )
-                    Spacer(modifier = Modifier.padding(10.dp))
-                    Text(
-                        text = item.description,
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-                    Checkbox(
-                        checked = isChecked,
-                        onCheckedChange = {
-                            isChecked = it
-                            // Update the item in the database when the checkbox is toggled
-                            val updatedItem = item.copy(isChecked = isChecked)
-                            itemViewModel.update(updatedItem)
-                        }
-                    )
-                }
             }
         }
     }
