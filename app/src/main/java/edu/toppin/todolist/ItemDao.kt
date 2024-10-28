@@ -23,4 +23,11 @@ interface ItemDao{
 
     @Query("SELECT * FROM item_table ORDER BY timestamp ASC")
     fun getAllItems(): Flow<List<Item>>
+
+    @Query("SELECT * FROM item_table WHERE id = :itemId")
+    suspend fun getItemById(itemId: Int): Item
+
+    @Query("UPDATE item_table SET isChecked = :isChecked WHERE id = :itemId")
+    suspend fun updateCheckedState(itemId: Int, isChecked: Boolean)
+
 }

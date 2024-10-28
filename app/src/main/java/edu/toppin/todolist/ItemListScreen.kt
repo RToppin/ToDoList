@@ -3,6 +3,7 @@ package edu.toppin.todolist
 import ItemViewModel
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,26 +26,52 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import kotlinx.coroutines.delay
 import kotlin.math.max
 import kotlin.math.min
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemListScreen(itemViewModel: ItemViewModel, onAddItem: () -> Unit) {
     val itemList by itemViewModel.allItems.collectAsState(initial = emptyList())
 
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = { onAddItem() }) {
-                Icon(Icons.Filled.Add, "Add Task")
-            }
-        }
+        topBar ={
+                TopAppBar(
+                    title = {
+                        Text(text = "ToDo List")
+                    },
+                    actions = {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = "Add",
+                            modifier = Modifier
+                                .size(40.dp)
+                                .padding(5.dp)
+                                .clickable { onAddItem() }
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "Settings",
+                            modifier = Modifier
+                                .size(40.dp)
+                                .padding(5.dp)
+                                .clickable { } //TODO() add settings screen
+                        )
+                    }
+
+                )
+        },
+
     ) { padding ->
         LazyColumn(
             contentPadding = padding,
@@ -61,7 +88,7 @@ fun ItemListScreen(itemViewModel: ItemViewModel, onAddItem: () -> Unit) {
 
 @Composable
 fun ItemRow(item: Item, itemViewModel: ItemViewModel) {
-    val isChecked by remember { mutableStateOf(item.isChecked) }
+    var isChecked by remember { mutableStateOf((item.isChecked))}
     var percentageRemaining by remember { mutableStateOf(item.percentageRemaining) }
 
     LaunchedEffect(item) {
@@ -99,11 +126,8 @@ fun ItemRow(item: Item, itemViewModel: ItemViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Checkbox(
-                checked = isChecked,
-                onCheckedChange = {
-                    val updatedItem = item.copy(isChecked = it)
-                    itemViewModel.update(updatedItem)
-                }
+                checked = item.isChecked,
+                onCheckedChange = {checked -> itemViewModel.updateCheckedState(item, checked)}
             )
             Text(
                 text = item.name,
